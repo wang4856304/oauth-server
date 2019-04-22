@@ -1,0 +1,66 @@
+server:
+   port: 9920
+
+eureka:
+   client:
+      service-url:
+         defaultZone: http://localhost:9320/eureka
+      register-with-eureka: false
+      fetch-registry: false #不往注册中心注册
+
+spring:
+   profiles:
+      active: dev
+   messages:
+      basename: i18n/messages
+      encoding: UTF-8
+   application:
+      name: oauth-server
+   jpa:
+      database: mysql
+      generate-ddl: true
+      hibernate:
+         ddl-auto: update
+         naming:
+            physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+      show-sql: true
+
+   dataSource:
+      master:
+         driverClassName: com.mysql.jdbc.Driver
+         url: jdbc:mysql://127.0.0.1:3306/oauth-server?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
+         username: root
+         password: root
+         initialSize: 20
+         minIdle: 5
+         maxActive: 30
+         maxWait: 30000
+         removeAbandoned: true
+         removeAbandonedTimeoutMillis: 300000
+         defaultAutoCommit: false
+         timeBetweenEvictionRunsMillis: 60000
+         minEvictableIdleTimeMillis: 300000
+         validationQuery: SELECT 1
+         testWhileIdle: true
+         connectionInitSql: set names utf8mb4
+
+redis:
+   noCluster:
+      database: 9
+      host: 127.0.0.1
+      port: 6379
+      #password: xatwsz.com
+      maxActive: 100
+      maxWait: 3000
+      maxIdle: 8
+      minIdle: 2
+      timeout: 1000
+      testOnBorrow: true
+
+
+logging:
+   config: classpath:log4j2.xml
+
+
+
+

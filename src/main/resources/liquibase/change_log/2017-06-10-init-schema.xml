@@ -1,0 +1,17 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="init-schema" author="wangjun">
+        <sql>
+            create table user(
+            `USER_ID` bigint(20) not null primary key auto_increment  comment'主键',
+            `USER_NAME` varchar(128) not null unique comment '用户名',
+            `PASSWORD` varchar(128) not null comment '密码',
+            `CREATE_AT`            timestamp not null default CURRENT_TIMESTAMP  comment '创建时间',
+            `UPDATE_AT`            timestamp not null default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment '更新时间'
+            )ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = '用户表' ROW_FORMAT = Compact;
+        </sql>
+    </changeSet>
+</databaseChangeLog>
