@@ -2,14 +2,15 @@ package com.wj.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.*;
-import java.security.Principal;
+import java.util.Date;
 
 /**
  * @author jun.wang
@@ -23,22 +24,36 @@ import java.security.Principal;
 @RequestMapping("/uaa")
 public class UserController {
 
+    private Logger logger = LoggerFactory.getLogger(UserController.class);
+
 
     @Autowired
     private TokenStore tokenStore;
 
     @GetMapping("/user")
     public Object user(@RequestParam("access_token") String token){
-        OAuth2Authentication auth2Authentication = tokenStore.readAuthentication(token);
         JSONObject jsonObject = new JSONObject();
+        OAuth2Authentication auth2Authentication = tokenStore.readAuthentication(token);
         if (auth2Authentication == null) {
             jsonObject.put("code", 1001);
             jsonObject.put("msg", "token is not exists");
+            logger.info("response:" + jsonObject);
             return jsonObject;
+        }
+        OAuth2AccessToken auth2AccessToken = tokenStore.readAccessToken(token);
+        if (auth2AccessToken != null) {
+            Date expireDate = auth2AccessToken.getExpiration();
+            if (expireDate.before(new Date())) {
+                jsonObject.put("code", 1002);
+                jsonObject.put("msg", "token is expired");
+                logger.info("response:" + jsonObject);
+                return jsonObject;
+            }
         }
         jsonObject.put("code", 0);
         jsonObject.put("msg", "success");
         jsonObject.put("data", tokenStore.readAuthentication(token).getPrincipal());
+        logger.info("response:" + jsonObject);
         return jsonObject;
     }
 

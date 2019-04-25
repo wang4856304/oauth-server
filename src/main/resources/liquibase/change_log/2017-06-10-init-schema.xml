@@ -3,15 +3,85 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <changeSet id="init-schema" author="wangjun">
+    <changeSet id="user" author="wangjun">
         <sql>
             create table user(
-            `USER_ID` bigint(20) not null primary key auto_increment  comment'主键',
+            `ID` bigint(20) not null primary key auto_increment  comment'主键',
             `USER_NAME` varchar(128) not null unique comment '用户名',
             `PASSWORD` varchar(128) not null comment '密码',
+            `STATUS` tinyint not null default 1 comment '账号状态,0:失效,1:有效',
             `CREATE_AT`            timestamp not null default CURRENT_TIMESTAMP  comment '创建时间',
             `UPDATE_AT`            timestamp not null default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment '更新时间'
             )ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = '用户表' ROW_FORMAT = Compact;
+        </sql>
+    </changeSet>
+    <changeSet id="role" author="wangjun">
+        <sql>
+            create table role(
+            `ID` bigint(20) not null primary key auto_increment  comment'主键',
+            `PARENT_ID` bigint(20) not null default 0  comment'父角色ID',
+            `ROLE_NAME` varchar(128) not null unique comment '角色名',
+            `DESC` varchar(255) comment '角色描述',
+            `IS_ENABLE` tinyint not null default 1 comment '角色状态,0:失效,1:有效',
+            `CREATE_AT`            timestamp not null default CURRENT_TIMESTAMP  comment '创建时间',
+            `UPDATE_AT`            timestamp not null default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment '更新时间'
+            )ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = '用户角色表' ROW_FORMAT = Compact;
+        </sql>
+    </changeSet>
+    <changeSet id="user_role" author="wangjun">
+        <sql>
+            create table user_role(
+            `ID` bigint(20) not null primary key auto_increment  comment'主键',
+            `USER_ID` bigint(20) not null unique comment'用户ID',
+            `ROLE_ID` bigint(20) not null comment '角色ID',
+            `CREATE_AT`            timestamp not null default CURRENT_TIMESTAMP  comment '创建时间',
+            `UPDATE_AT`            timestamp not null default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment '更新时间'
+            )ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = '用户角色关联表' ROW_FORMAT = Compact;
+        </sql>
+    </changeSet>
+    <changeSet id="oauth_access_token" author="wangjun">
+        <sql>
+            create table oauth_access_token (
+            token_id VARCHAR(255),
+            authentication_id VARCHAR(255),
+            user_name VARCHAR(255),
+            client_id VARCHAR(255),
+            token BLOB,
+            authentication BLOB,
+            refresh_token VARCHAR(255),
+            create_time timestamp default CURRENT_TIMESTAMP  comment '创建时间'
+            ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = 'token表' ROW_FORMAT = Compact;
+        </sql>
+    </changeSet>
+    <changeSet id="oauth_refresh_token" author="wangjun">
+        <sql>
+            create table oauth_refresh_token (
+            token_id VARCHAR(255),
+            token BLOB,
+            authentication BLOB,
+            create_time timestamp default CURRENT_TIMESTAMP  comment '创建时间'
+            ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = 'refreshToken表' ROW_FORMAT = Compact;
+        </sql>
+    </changeSet>
+
+    <changeSet id="oauth_client_details" author="wangjun">
+        <sql>
+            create table oauth_client_details (
+            `CLIENT_ID` VARCHAR(48) NOT NULL,
+            `RESOURCE_IDS` VARCHAR(256) DEFAULT NULL,
+            `CLIENT_SECRET` VARCHAR(256) DEFAULT NULL,
+            `SCOPE` VARCHAR(256) DEFAULT NULL,
+            `AUTHORIZED_GRANT_TYPES` VARCHAR(256) DEFAULT NULL,
+            `WEB_SERVER_REDIRECT_URI` VARCHAR(256) DEFAULT NULL,
+            `AUTHORITIES` VARCHAR(256) DEFAULT NULL,
+            `ACCESS_TOKEN_VALIDITY` INT(11) DEFAULT NULL,
+            `REFRESH_TOKEN_VALIDITY` INT(11) DEFAULT NULL,
+            `ADDITIONAL_INFORMATION` VARCHAR(4096) DEFAULT NULL,
+            `AUTOAPPROVE` VARCHAR(256) DEFAULT NULL,
+            `CREATE_AT`            timestamp not null default CURRENT_TIMESTAMP  comment '创建时间',
+            `UPDATE_AT`            timestamp not null default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment '更新时间',
+            PRIMARY KEY (`CLIENT_ID`)
+            ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_bin COMMENT = '客户端配置表' ROW_FORMAT = Compact;
         </sql>
     </changeSet>
 </databaseChangeLog>

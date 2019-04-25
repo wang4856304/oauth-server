@@ -1,7 +1,9 @@
 package com.wj.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -14,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * @author jun.wang
@@ -25,19 +28,25 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @Configuration
 @EnableWebSecurity
+@Order(2)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     @Bean
     @Override
     protected UserDetailsService userDetailsService(){
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+        /*InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String finalPassword = bCryptPasswordEncoder.encode("123456");
         //String finalPassword = "123456";
         manager.createUser(User.withUsername("user_1").password(finalPassword).authorities("oauth2").build());
         finalPassword = "{noop}123456";
         manager.createUser(User.withUsername("user_2").password(finalPassword).authorities("oauth2").build());
-        return manager;
+        return manager;*/
+        //client_id=client_code&grant_type=authorization_code&redirect_uri=http://ww.baidu.com&client_secret=123456&code=nBYrX5
+        return userDetailsService;
     }
 
     @Override
@@ -46,7 +55,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .requestMatchers().anyRequest()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/oauth/*").permitAll();
+                .antMatchers("/oauth/**").authenticated()
+                .and()
+                .formLogin().permitAll();
         // 所有的Rest服务一定要设置为无状态，以提升操作性能
         http.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -73,11 +84,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     }*/
 
-    /*@Bean
+    @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userDetailsService());
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
-    }*/
+    }
 }
