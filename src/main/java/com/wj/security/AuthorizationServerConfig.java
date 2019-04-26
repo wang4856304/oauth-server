@@ -27,6 +27,8 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
 import javax.sql.DataSource;
 
@@ -107,9 +109,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.withClientDetails(clientDetails());
 
-        //String finalSecret = new BCryptPasswordEncoder().encode("123456");
+        /*String finalSecret = new BCryptPasswordEncoder().encode("123456");
         //配置两个客户端,一个用于password认证一个用于client认证
-        /*clients.inMemory()
+        clients.inMemory()
                 .withClient("client_1")
                 //.resourceIds(DEMO_RESOURCE_ID)
                 .authorizedGrantTypes("client_credentials", "refresh_token")
@@ -126,9 +128,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 //.accessTokenValiditySeconds(600)
                 .and()
                 .withClient("client_3")
-                //.resourceIds(DEMO_RESOURCE_ID)
-                .authorizedGrantTypes("authorization_code")
-                .scopes("select")
+                .redirectUris("https://www.baidu.com")
+                .authorizedGrantTypes("authorization_code", "refresh_token")
+                .scopes("all")
                 //.authorities("oauth2")
                 .secret(finalSecret);*/
     }
