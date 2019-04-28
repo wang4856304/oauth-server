@@ -6,5 +6,6 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <include file="classpath:liquibase/change_log/2017-06-10-init-schema.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:liquibase/init/init.sql" relativeToChangelogFile="false"/>
 
 </databaseChangeLog>

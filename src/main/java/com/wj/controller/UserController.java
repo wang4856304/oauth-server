@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.web.bind.annotation.*;
 import java.io.*;
 import java.util.Date;
@@ -52,7 +54,14 @@ public class UserController {
         }
         jsonObject.put("code", 0);
         jsonObject.put("msg", "success");
-        jsonObject.put("data", tokenStore.readAuthentication(token).getPrincipal());
+        if (tokenStore instanceof JwtTokenStore) {
+            JSONObject userJson = new JSONObject();
+            userJson.put("username", tokenStore.readAuthentication(token).getPrincipal());
+            jsonObject.put("data", userJson);
+        }
+        else if (tokenStore instanceof JdbcTokenStore){
+            jsonObject.put("data", tokenStore.readAuthentication(token).getPrincipal());
+        }
         logger.info("response:" + jsonObject);
         return jsonObject;
     }

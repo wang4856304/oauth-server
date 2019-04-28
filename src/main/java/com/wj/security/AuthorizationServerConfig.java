@@ -21,11 +21,10 @@ import org.springframework.security.oauth2.provider.client.JdbcClientDetailsServ
 import org.springframework.security.oauth2.provider.endpoint.AuthorizationEndpoint;
 import org.springframework.security.oauth2.provider.endpoint.CheckTokenEndpoint;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
-import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
-import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
-import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
-import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.*;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -65,18 +64,31 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         return new RedisTokenStore(connectionFactory);
     }
 
-    @Primary
     @Bean
     public TokenStore jdbcTokenStore() {
         return new JdbcTokenStore(dataSource);
     }
-    @Override
+
+
+    @Primary
+    @Bean
+    public TokenStore jwtTokenStore() {
+        return new JwtTokenStore(jwtTokenConverter());
+    }
+
+    @Bean
+    public JwtAccessTokenConverter jwtTokenConverter() {
+        return new JwtAccessTokenConverter();
+    }
+
+  @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.authenticationManager(authenticationManager)
                 .userDetailsService(userDetailsService)//不配置，调用refresh_token接口会报错
-                 .tokenStore(jdbcTokenStore())
+                 .tokenStore(jwtTokenStore())
                  .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
-                 .tokenServices(tokenServices());
+                .accessTokenConverter(jwtTokenConverter());//jwtToken转换
+                 //.tokenServices(tokenServices());
     }
 
     @Override
