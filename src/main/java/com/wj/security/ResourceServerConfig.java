@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableResourceServer
-@Order(6)
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Override
@@ -29,9 +28,9 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .authenticationEntryPoint((request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
                 .and()
                 .authorizeRequests()
-                //.anyRequest().authenticated()
+                .anyRequest().authenticated()
                 //.anyRequest().permitAll()
-                .antMatchers("/uaa/**").authenticated()
+                .antMatchers("/uaa/**").permitAll()
                 .and()
                 .httpBasic();
     }

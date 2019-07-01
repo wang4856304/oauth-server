@@ -28,7 +28,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@Order(2)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -56,6 +55,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/oauth/**").authenticated()
+                //.anyRequest().authenticated()
                 .and()
                 .formLogin().permitAll();//允许使用自带的登陆页面
         // 所有的Rest服务一定要设置为无状态，以提升操作性能

@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -59,9 +60,16 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    public RedisConnectionFactory getConnectionFactory() {
+        JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory();
+        jedisConnectionFactory.setHostName("10.10.24.244");
+        jedisConnectionFactory.setPort(6379);
+        return jedisConnectionFactory;
+    }
+
     @Bean
     public TokenStore redisTokenStore() {
-        return new RedisTokenStore(connectionFactory);
+        return new RedisTokenStore(getConnectionFactory());
     }
 
     @Bean
@@ -145,5 +153,17 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .scopes("all")
                 //.authorities("oauth2")
                 .secret(finalSecret);*/
+    }
+
+    public static void main(String args[]) throws Exception {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String encodeStr = passwordEncoder.encode("123");
+        //String encodeStr1 = passwordEncoder.encode("123");
+        System.out.println(encodeStr);
+        System.out.println(passwordEncoder.matches("123", encodeStr));
+        //System.out.println(encodeStr1);
+        System.out.println(encodeStr.length());
+        System.out.println("$2a$10$9QPaI8N4IzljxSTjYhdFoOJWqocSvm4LKqJS4ukTwBrKXIjbkt4mq".length());
+        System.out.println(passwordEncoder.matches("278758", "$2a$10$9QPaI8N4IzljxSTjYhdFoOJWqocSvm4LKqJS4ukTwBrKXIjbkt4mq"));
     }
 }

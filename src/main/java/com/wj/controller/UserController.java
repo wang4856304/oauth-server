@@ -2,9 +2,13 @@ package com.wj.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.wj.dao.master.entity.User;
+import com.wj.dao.master.repo.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -27,6 +31,9 @@ import java.util.Date;
 public class UserController {
 
     private Logger logger = LoggerFactory.getLogger(UserController.class);
+
+    @Autowired
+    private UserRepository userRepository;
 
 
     @Autowired
@@ -71,28 +78,18 @@ public class UserController {
         return "success";
     }
 
+    @GetMapping("/addUser")
+    public Object addUser(@RequestParam String name, @RequestParam String password) {
+        User user = new User();
+        user.setUserName(name);
+        user.setPassword(password);
+        user.setStatus(1);
+        userRepository.save(user);
+        return "success";
+    }
+
 
     public static void main(String args[]) throws Exception {
-
-        JSONObject jsonObject = JSONObject.parseObject("{\n" +
-                "            \"actionId\": \"2\",\n" +
-                "            \"actionName\": \"触发报警\",\n" +
-                "            \"calcParams\": \"[\\\"\\\"]\",\n" +
-                "            \"conditionParams\": \"[\\\"D2_HK_FAULT.pv==\\\\\\\"True\\\\\\\"\\\"]\",\n" +
-                "            \"createBy\": \"ssgrtnykjyxgs8\",\n" +
-                "            \"createDate\": \"2019-03-08 00:18:22\",\n" +
-                "            \"isAlarmpersistent\": 1,\n" +
-                "            \"modelId\": \"T2M1U0NSQ38W8\",\n" +
-                "            \"ruleDesc\": \"2#冷干机过载\",\n" +
-                "            \"ruleId\": \"2QYPU59PZ1S8\",\n" +
-                "            \"ruleName\": \"D2_HK_FAULT\",\n" +
-                "            \"targetName\": \"D2_HK_FAULT\",\n" +
-                "            \"targetid\": \"2QRHC5U47XC8\",\n" +
-                "            \"tenantId\": \"4I1CQ08\",\n" +
-                "            \"updateBy\": \"ssgrtnykjyxgs8\",\n" +
-                "            \"updateDate\": \"2019-03-08 00:18:22\"\n" +
-                "        }");
-
         File file = new File("D:\\lll.txt");
         InputStream stream = new FileInputStream(file);
         BufferedReader  reader = new BufferedReader(new InputStreamReader(stream, "utf-8"));
@@ -103,6 +100,7 @@ public class UserController {
         }
         JSONObject json = JSONObject.parseObject(sb.toString());
         JSONArray measurementsArr = json.getJSONArray("measurements");
+        String str = measurementsArr.toJSONString();
         for (int i = 0; i < measurementsArr.size(); i++) {
             JSONObject measurementsJson = measurementsArr.getJSONObject(i);
             if (measurementsJson.containsKey("meta")) {
