@@ -54,8 +54,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .requestMatchers().anyRequest()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/oauth/**").authenticated()
-                //.anyRequest().authenticated()
+                .antMatchers("/uaa/login").permitAll()
+                .antMatchers("/uaa/user").permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .formLogin().permitAll();//允许使用自带的登陆页面
         // 所有的Rest服务一定要设置为无状态，以提升操作性能

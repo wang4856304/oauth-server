@@ -6,7 +6,7 @@ eureka:
       service-url:
          defaultZone: http://localhost:9320/eureka
       register-with-eureka: false
-      fetch-registry: false #禁止检索服务
+      fetch-registry: false #本地缓存服务
 
 spring:
    profiles:
@@ -28,7 +28,7 @@ spring:
    dataSource:
       master:
          driverClassName: com.mysql.jdbc.Driver
-         url: jdbc:mysql://127.0.0.1:8066/RUN-TEST?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
+         url: jdbc:mysql://127.0.0.1:3306/oauth-server?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
          username: root
          password: root
          initialSize: 20

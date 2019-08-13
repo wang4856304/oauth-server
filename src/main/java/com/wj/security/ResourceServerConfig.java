@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
  * @date 2019/4/2 13:28
  */
 
-@Configuration
+/*@Configuration
 @EnableResourceServer
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
@@ -34,4 +34,4 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .and()
                 .httpBasic();
     }
-}
+}*/

@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wj.dao.master.entity.User;
 import com.wj.dao.master.repo.UserRepository;
+import com.wj.entity.dto.UserDto;
+import com.wj.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,10 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 import java.io.*;
 import java.util.Date;
 
@@ -28,7 +33,7 @@ import java.util.Date;
 
 @RestController
 @RequestMapping("/uaa")
-public class UserController {
+public class UserController extends BaseController {
 
     private Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -38,6 +43,9 @@ public class UserController {
 
     @Autowired
     private TokenStore tokenStore;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/user")
     public Object user(@RequestParam("access_token") String token){
@@ -86,6 +94,14 @@ public class UserController {
         user.setStatus(1);
         userRepository.save(user);
         return "success";
+    }
+
+    @PostMapping("/login")
+    public Object login(@Valid @RequestBody UserDto userDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return buildValidErrorJson(bindingResult);
+        }
+        return userService.login(userDto);
     }
 
 
