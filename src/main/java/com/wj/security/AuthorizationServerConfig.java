@@ -95,8 +95,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .userDetailsService(userDetailsService)//不配置，调用refresh_token接口会报错
                  .tokenStore(jwtTokenStore())
                  .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
-                .accessTokenConverter(jwtTokenConverter());//jwtToken转换
-                 //.tokenServices(tokenServices());
+                .accessTokenConverter(jwtTokenConverter())//jwtToken转换
+                 .tokenServices(tokenServices());
     }
 
     @Override
@@ -112,11 +112,12 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Primary
     public AuthorizationServerTokenServices tokenServices() {
         DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
-        defaultTokenServices.setAccessTokenValiditySeconds(600);
+        defaultTokenServices.setAccessTokenValiditySeconds(3600);//token有效期，单位秒
         //defaultTokenServices.setRefreshTokenValiditySeconds(-1);
         defaultTokenServices.setSupportRefreshToken(true);
         defaultTokenServices.setReuseRefreshToken(false);
-        defaultTokenServices.setTokenStore(jdbcTokenStore());
+        defaultTokenServices.setTokenStore(jwtTokenStore());
+        defaultTokenServices.setTokenEnhancer(jwtTokenConverter());
         return defaultTokenServices;
     }
 

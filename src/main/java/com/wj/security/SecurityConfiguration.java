@@ -54,8 +54,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .requestMatchers().anyRequest()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/uaa/login").permitAll()
-                .antMatchers("/uaa/user").permitAll()
+                .antMatchers("/uaa/*").permitAll()
+                //.antMatchers("/uaa/user").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().permitAll();//允许使用自带的登陆页面

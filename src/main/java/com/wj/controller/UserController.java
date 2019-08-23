@@ -4,14 +4,17 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wj.dao.master.entity.User;
 import com.wj.dao.master.repo.UserRepository;
+import com.wj.entity.Response;
 import com.wj.entity.dto.UserDto;
 import com.wj.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
@@ -81,6 +84,24 @@ public class UserController extends BaseController {
         return jsonObject;
     }
 
+    @GetMapping("/checkToken")
+    public ResponseEntity<JSONObject> checkToken(@RequestParam("access_token") String token) {
+        JSONObject jsonObject = new JSONObject();
+        OAuth2AccessToken auth2AccessToken = tokenStore.readAccessToken(token);//过期不抛异常
+        if (auth2AccessToken != null) {
+            if (auth2AccessToken.isExpired()) {
+                throw new InvalidTokenException("token is expired");
+            }
+        }
+        else {
+            throw new InvalidTokenException("token is invalid");
+        }
+        jsonObject.put("code", 0);
+        jsonObject.put("msg", "success");
+        logger.info("response:" + jsonObject);
+        return ResponseEntity.ok().body(jsonObject);
+    }
+
     @GetMapping("/test")
     public String test(){
         return "success";
@@ -101,7 +122,9 @@ public class UserController extends BaseController {
         if (bindingResult.hasErrors()) {
             return buildValidErrorJson(bindingResult);
         }
-        return userService.login(userDto);
+        Response response = new Response();
+        response.setData(userService.login(userDto));
+        return buildSuccessResponse(response);
     }
 
 

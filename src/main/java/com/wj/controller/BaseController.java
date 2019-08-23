@@ -28,6 +28,13 @@ public abstract class BaseController {
     }
 
 
+    public Object buildSuccessResponse(Response response) {
+        response.setCode("0");
+        response.setMsg("success");
+        response.setServerTime(DateUtil.formartDate(new Date(), DateUtil.YYYY_MM_DD_HH_MM_SS));
+        logger.info("response:" + JSONObject.toJSONString(response));
+        return response;
+    }
     public Object buildValidErrorJson(BindingResult bindingResult) {
         Response response = new Response();
         if (bindingResult.hasErrors()) {
