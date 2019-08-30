@@ -59,6 +59,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().permitAll();//允许使用自带的登陆页面
+                /*.and()
+                .logout().logoutSuccessUrl("http://www.baidu.com").logoutUrl("/uaa/loginOut");//登出配置*/
         // 所有的Rest服务一定要设置为无状态，以提升操作性能
         http.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

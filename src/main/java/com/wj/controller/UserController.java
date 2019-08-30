@@ -13,15 +13,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.token.TokenService;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.*;
 import java.util.Date;
@@ -49,6 +53,9 @@ public class UserController extends BaseController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private DefaultTokenServices tokenService;
 
     @GetMapping("/user")
     public Object user(@RequestParam("access_token") String token){
@@ -87,6 +94,10 @@ public class UserController extends BaseController {
     @GetMapping("/checkToken")
     public ResponseEntity<JSONObject> checkToken(@RequestParam("access_token") String token) {
         JSONObject jsonObject = new JSONObject();
+        OAuth2Authentication auth2Authentication = tokenStore.readAuthentication(token);
+        if (auth2Authentication == null) {
+            throw new RuntimeException("token is not exists");
+        }
         OAuth2AccessToken auth2AccessToken = tokenStore.readAccessToken(token);//过期不抛异常
         if (auth2AccessToken != null) {
             if (auth2AccessToken.isExpired()) {
@@ -99,6 +110,16 @@ public class UserController extends BaseController {
         jsonObject.put("code", 0);
         jsonObject.put("msg", "success");
         logger.info("response:" + jsonObject);
+        return ResponseEntity.ok().body(jsonObject);
+    }
+
+    @GetMapping("/loginOut")
+    public ResponseEntity<JSONObject> loginOut(HttpServletRequest request, @RequestParam("access_token") String accessToken) {
+        checkToken(accessToken);
+        tokenService.revokeToken(accessToken);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("code", 0);
+        jsonObject.put("msg", "success");
         return ResponseEntity.ok().body(jsonObject);
     }
 
