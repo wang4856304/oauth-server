@@ -10,6 +10,7 @@ import com.wj.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -55,6 +56,7 @@ public class UserController extends BaseController {
     private UserService userService;
 
     @Autowired
+    @Qualifier("tokenServices")
     private DefaultTokenServices tokenService;
 
     @GetMapping("/user")

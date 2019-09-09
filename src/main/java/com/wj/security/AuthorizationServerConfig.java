@@ -109,9 +109,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .passwordEncoder(passwordEncoder);//client_secret加密
     }
 
-    @Bean
+    @Bean("tokenServices")
     @Primary
-    public AuthorizationServerTokenServices tokenServices() {
+    public DefaultTokenServices tokenServices() {
         DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
         defaultTokenServices.setAccessTokenValiditySeconds(3600);//token有效期，单位秒
         //defaultTokenServices.setRefreshTokenValiditySeconds(-1);
@@ -159,10 +159,10 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     public static void main(String args[]) throws Exception {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String encodeStr = passwordEncoder.encode("123");
+        String encodeStr = passwordEncoder.encode("87256362");
         //String encodeStr1 = passwordEncoder.encode("123");
         System.out.println(encodeStr);
-        System.out.println(passwordEncoder.matches("123", encodeStr));
+        System.out.println(passwordEncoder.matches("87256362", encodeStr));
         //System.out.println(encodeStr1);
         System.out.println(encodeStr.length());
         System.out.println("$2a$10$9QPaI8N4IzljxSTjYhdFoOJWqocSvm4LKqJS4ukTwBrKXIjbkt4mq".length());
